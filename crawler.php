@@ -28,9 +28,9 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
                 $addedLinks++;
             }
         }
-    if (preg_match('@<title>([^<]+)</title>@i', $content, $match) !=0) {
+        if (preg_match('@<title>([^<]+)</title>@i', $content, $match) !=0) {
            $newTitle = $match[1];      
-            }
+        }
 
         echo $addedLinks, " new URLs added\n";
         echo $newTitle, " Page Title";
