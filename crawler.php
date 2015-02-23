@@ -36,3 +36,5 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 }
 
 print_r($urlList);
+
+//on each pass, find breadcrumbs id and echo as plaintext to screen
