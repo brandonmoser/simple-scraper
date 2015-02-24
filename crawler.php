@@ -32,8 +32,8 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
         echo $addedLinks, " new URLs added\n";
     }
 
-    if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $matches) != 0) {
-        echo html_entity_decode(strip_tags($matches[1])), "\n";
+    if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
+        echo html_entity_decode(strip_tags($match[1])), "\n";
     }
 
     echo "\n";
