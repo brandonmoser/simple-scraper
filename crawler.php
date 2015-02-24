@@ -32,6 +32,8 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
         echo $addedLinks, " new URLs added\n";
     }
 
+    // "Here is a comment. This is where I will crawl images and eat infants"
+
     echo "\n";
 }
 
