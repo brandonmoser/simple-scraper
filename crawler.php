@@ -34,7 +34,7 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
         echo $addedLinks, " new URLs added\n";
     }
 
-    // "Here is a comment. This is where I will crawl images and eat infants"
+    // IMAGE CRAWLING
     if (preg_match_all('@<div class="prod_img"><img src="([\s\S]+?)"@i', $content, $matches) != 0) {
         $addedImages = 0;
 
