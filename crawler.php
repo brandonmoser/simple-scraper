@@ -39,13 +39,15 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
         $addedImages = 0;
 
         foreach($matches[1] as $newImage) {
-            if (! in_array($newImage, $imageList)) {
-                $imageList[] = $newImage;
-                preg_match('@\/([^\/]+?)\.jpg@i', $newImage, $tmp);
-                $imageString = file_get_contents($newImage);
-                file_put_contents("images/".($tmp[1]).".jpg", $imageString);
-                $addedImages++;
+            $imageList[$newImage] = $newImage;
+            $imageString = file_get_contents($newImage);
+            preg_match('@\/([^\/]+?\.(gif|png|jpg))@i', $newImage, $tmp);
+
+            if (! file_exists('images')) {
+                mkdir('images', 0777);
             }
+            file_put_contents("images/".($tmp[1]), $imageString);
+            $addedImages++;
         }
 
         echo $addedImages, " new images added\n";
@@ -56,5 +58,3 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 
 print_r($urlList);
 print_r($imageList);
-
-file_put_contents("images.txt", $imageList);
