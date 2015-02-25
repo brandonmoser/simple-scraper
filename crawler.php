@@ -12,6 +12,8 @@ $urlList = array(
 // List of product images that we found on this site
 $imageList = array();
 
+$breadcrumbMap = array();
+
 // Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
@@ -34,6 +36,27 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 
     // Find and display any breadcrumbs
     if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
+        $breadcrumbSections = explode('<span>&gt;</span>', $match[1]);
+        $mapPointer = &$breadcrumbMap;
+        foreach($breadcrumbSections as $section) {
+            if (preg_match('@<a href="([^>"]+)">([^<]+)</a>@', $section, $breadcrumbMatch) == 1) {
+                list($nothing, $crumbUrl, $crumbName) = $breadcrumbMatch;
+
+                if (empty($mapPointer['children'])) {
+                    $mapPointer['children'] = array();
+                }
+
+                if (empty($mapPointer['children'][$crumbUrl])) {
+                    $mapPointer['children'][$crumbUrl] = array(
+                        'url'       => $crumbUrl,
+                        'children'  => array(),
+                        'name'      => $crumbName,
+                    );
+                }
+                $mapPointer = &$mapPointer['children'][$crumbUrl];
+            }
+        }
+
         $breadcrumb = html_entity_decode(strip_tags($match[1]));
         echo '» ', preg_replace('@\s*>\s*@', ' › ', $breadcrumb), "\n";
     }
@@ -70,6 +93,8 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 
     echo "\n\n";
 }
+
+print_r($breadcrumbMap);
 
 
 // Extract the images that we found
