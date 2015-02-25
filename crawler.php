@@ -17,7 +17,7 @@ $breadcrumbMap = array();
 // Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
-    //sleep(1);
+    sleep(1);
 
     echo $urlList[$page], "\n\n";
 
@@ -36,19 +36,19 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 
     // Find and display any breadcrumbs
     if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
-        // separating a string into an array on the span tag with $gt (>) and putting it in $match[1]
+        // Separate a string into an array around the breadcrumb delimiters in $match[1] and put it into $breadcrumbSections
         $breadcrumbSections = explode('<span>&gt;</span>', $match[1]); 
-        // assigning $mapPointer to $breadcrumbMap the & is accepting a reference to $breadcrumbMap as its parameter
+        // Initialize $mapPointer as a reference to the base of $breadcrumbMap
         $mapPointer = &$breadcrumbMap;
-        //starting a foreach loop and renaming each array $section
+        // Start a foreach loop where we break out each element as $section on each pass
         foreach($breadcrumbSections as $section) {
             // grabbing the breadcrumb link and name from the anchor tag 
             if (preg_match('@<a href="([^>"]+)">([^<]+)</a>@', $section, $breadcrumbMatch) == 1) {
-                // list is used to assign names to varialbes
+                // Set $nothing to $breadcrumbMatch[0] (because it's not used), $crumbUrl to $breadcrumbMatch[1], and $crumbName to $breadcrumbMatch[2]
                 list($nothing, $crumbUrl, $crumbName) = $breadcrumbMatch;
                 // checking if $mapPointer -> children is empty
                 if (empty($mapPointer['children'])) {
-                    // if empty setting it to the array()
+                    // if empty, initialize $mapPointer['children'] as an empty array
                     $mapPointer['children'] = array();
                 }
                 // checking if $mapPointer -> children -> $crumbUrl is empty
@@ -60,13 +60,13 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
                         'children'  => array(),
                     );
                 }
-                // passing $mapPointer -> children -> $crumbUrl as a reference to the varialbe $mapPointer
+                // Update $mapPointer so that it moves one section further down the $breadcrumbMap structure
                 $mapPointer = &$mapPointer['children'][$crumbUrl];
             }
         }
-        // sanitizing $breadcrumbs by turning ASCII code into characters and removing all tags inside the variable
+        // sanitizing $breadcrumbs by turning HTML entities back into characters after removing all tags inside the string
         $breadcrumb = html_entity_decode(strip_tags($match[1]));
-        echo '» ', preg_replace('@\s*>\s*@', ' › ', $breadcrumb), "\n";
+        echo '>> ', preg_replace('@\s*>\s*@', ' > ', $breadcrumb), "\n";
     }
 
     // Check for any internal links
