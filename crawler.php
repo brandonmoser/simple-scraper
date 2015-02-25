@@ -17,7 +17,7 @@ $breadcrumbMap = array();
 // Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
-    sleep(1);
+    //sleep(1);
 
     echo $urlList[$page], "\n\n";
 
@@ -56,8 +56,8 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
                     // setting the variables url, children and name
                     $mapPointer['children'][$crumbUrl] = array(
                         'url'       => $crumbUrl,
-                        'children'  => array(),
                         'name'      => $crumbName,
+                        'children'  => array(),
                     );
                 }
                 // passing $mapPointer -> children -> $crumbUrl as a reference to the varialbe $mapPointer
