@@ -9,19 +9,37 @@ $urlList = array(
     $url
 );
 
+// List of product images that we found on this site
 $imageList = array();
 
+// Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
+    // Throttle the scan so we don't overwhelm the remote server
     sleep(1);
 
-    echo $urlList[$page], "\n";
+    echo $urlList[$page], "\n\n";
 
+    // Fetch the remote page if it exists
     $content = @file_get_contents($urlList[$page]);
     if (! $content) {
         continue;
     }
 
-    if (preg_match_all('@<a\b[^>]*?href="(https?://[^/"]*?\btronixweb\.com/[^>"]+)"[^>]*>@i', $content, $matches) != 0) {
+    // Print the page's title
+    $pageTitle = '[ Untitled Page ]';
+    if (preg_match('@<title>([^<]+)</title>@i', $content, $match) !=0) {
+        $pageTitle = $match[1];
+    }
+    echo $pageTitle, "\n", str_repeat('-', strlen($pageTitle)), "\n";
+
+    // Find and display any breadcrumbs
+    if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
+        $breadcrumb = html_entity_decode(strip_tags($match[1]));
+        echo '» ', preg_replace('@\s*>\s*@', ' › ', $breadcrumb), "\n";
+    }
+
+    // Check for any internal links
+    if (preg_match_all('@<a\b[^>]*?href="(https?://[^/"]*?\btronixweb\.com/[^>"]+)"@i', $content, $matches) != 0) {
         $addedLinks = 0;
 
         foreach($matches[1] as $newUrl) {
@@ -30,38 +48,57 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
                 $addedLinks++;
             }
         }
-        if (preg_match('@<title>([^<]+)</title>@i', $content, $match) !=0) {
-           $newTitle = $match[1];      
-        }
 
-        echo $addedLinks, " new URLs added\n";
-        echo $newTitle, " Page Title";
+        if($addedLinks) {
+            echo $addedLinks, " new URLs added\n";
+        }
     }
 
-    // IMAGE CRAWLING
-    if (preg_match_all('@<div class="prod_img"><img src="([\s\S]+?)"@i', $content, $matches) != 0) {
+    // Look for any product images
+    if (preg_match_all('@<div class="prod_img"><img src="([^"]+)@i', $content, $matches) != 0) {
         $addedImages = 0;
 
         foreach($matches[1] as $newImage) {
             $imageList[$newImage] = $newImage;
-            $imageString = file_get_contents($newImage);
-            preg_match('@\/([^\/]+?\.(gif|png|jpg))@i', $newImage, $tmp);
-
-            if (! file_exists('images')) {
-                mkdir('images', 0777);
-            }
-            file_put_contents("images/".($tmp[1]), $imageString);
             $addedImages++;
         }
 
-        echo $addedImages, " new images added\n";
-
-    if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
-        echo html_entity_decode(strip_tags($match[1])), "\n";
+        if ($addedImages) {
+            echo $addedImages, " new images added\n";
+        }
     }
 
-    echo "\n";
+    echo "\n\n";
 }
 
-print_r($urlList);
-print_r($imageList);
+
+// Extract the images that we found
+if (! empty($imageList)) {
+    echo "Found ", count($imageList), " product images, extracting...\n";
+
+    if (! file_exists('images')) {
+        if (! mkdir('images', 0777)) {
+            echo "Wasn't able to create the directory 'images'! No cool pics for you :(\n";
+            die;
+        }
+    }
+
+    foreach($imageList as $imageUrl) {
+        // Check the image URL for a predictable filename
+        if (! preg_match('@/([^/]+?\.(gif|png|jpe?g))([#?]|$)@i', $imageUrl, $match) == 1) {
+            continue;
+        }
+
+        $filename = strtolower($match[1]);
+
+        // Download the image
+        $imageData = file_get_contents($imageUrl);
+        if (empty($imageData)) {
+            continue;
+        }
+
+        echo $filename, "\n";
+        file_put_contents('images/' . $filename, $imageData);
+    }
+    echo "\n";
+}
