@@ -36,27 +36,35 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
 
     // Find and display any breadcrumbs
     if (preg_match('@<div[^>]+?id="breadcrumbs"[^>]*>([\s\S]+?)</div>@i', $content, $match) != 0) {
-        $breadcrumbSections = explode('<span>&gt;</span>', $match[1]);
+        // separating a string into an array on the span tag with $gt (>) and putting it in $match[1]
+        $breadcrumbSections = explode('<span>&gt;</span>', $match[1]); 
+        // assigning $mapPointer to $breadcrumbMap the & is accepting a reference to $breadcrumbMap as its parameter
         $mapPointer = &$breadcrumbMap;
+        //starting a foreach loop and renaming each array $section
         foreach($breadcrumbSections as $section) {
+            // grabbing the breadcrumb link and name from the anchor tag 
             if (preg_match('@<a href="([^>"]+)">([^<]+)</a>@', $section, $breadcrumbMatch) == 1) {
+                // list is used to assign names to varialbes
                 list($nothing, $crumbUrl, $crumbName) = $breadcrumbMatch;
-
+                // checking if $mapPointer -> children is empty
                 if (empty($mapPointer['children'])) {
+                    // if empty setting it to the array()
                     $mapPointer['children'] = array();
                 }
-
+                // checking if $mapPointer -> children -> $crumbUrl is empty
                 if (empty($mapPointer['children'][$crumbUrl])) {
+                    // setting the variables url, children and name
                     $mapPointer['children'][$crumbUrl] = array(
                         'url'       => $crumbUrl,
                         'children'  => array(),
                         'name'      => $crumbName,
                     );
                 }
+                // passing $mapPointer -> children -> $crumbUrl as a reference to the varialbe $mapPointer
                 $mapPointer = &$mapPointer['children'][$crumbUrl];
             }
         }
-
+        // sanitizing $breadcrumbs by turning ASCII code into characters and removing all tags inside the variable
         $breadcrumb = html_entity_decode(strip_tags($match[1]));
         echo '» ', preg_replace('@\s*>\s*@', ' › ', $breadcrumb), "\n";
     }
