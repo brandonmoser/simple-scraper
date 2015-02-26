@@ -1,6 +1,6 @@
 <?php
 
-define('MAX_PAGES', 20);
+define('MAX_PAGES', 50);
 
 $url = 'http://www.tronixweb.com/';
 
@@ -17,7 +17,7 @@ $breadcrumbMap = array();
 // Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
-    sleep(1);
+    //sleep(1);
 
     echo $urlList[$page], "\n\n";
 
@@ -102,8 +102,8 @@ for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
     echo "\n\n";
 }
 
-print_r($breadcrumbMap);
-
+//print_r($breadcrumbMap);
+file_put_contents('hierarchy.html', recurse_hierarchy($breadcrumbMap));
 
 // Extract the images that we found
 if (! empty($imageList)) {
@@ -134,4 +134,23 @@ if (! empty($imageList)) {
         file_put_contents('images/' . $filename, $imageData);
     }
     echo "\n";
+}
+
+function recurse_hierarchy($hierarchy) {  
+    if (isset($hierarchy['url']) && isset($hierarchy['name'])) {
+        $html_string = "\n<li><a href=\"".$hierarchy['url']."\">".$hierarchy['name']."</a>";
+    }
+    if (isset($hierarchy['children']) && !empty($hierarchy['children'])) {
+        $html_string .= "\n<ul>";
+        foreach ($hierarchy['children'] as $child) {
+            $html_append = recurse_hierarchy($child);
+            $html_string .= $html_append;
+        }
+        $html_string .= "\n</ul>";
+    }
+    if (isset($hierarchy['url']) && isset($hierarchy['name'])) {
+        $html_string .= "\n</li>";
+    }
+    
+    return $html_string;
 }
