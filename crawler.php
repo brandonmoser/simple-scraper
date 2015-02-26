@@ -30,6 +30,7 @@ $breadcrumbMap = array();
 // Crawl HTML pages
 for($page=0; $page<count($urlList) && $page<$maxPage; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
+	sleep($sleeptime);
 	
 	echo $urlList[$page], "\n\n";
 
