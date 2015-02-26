@@ -1,8 +1,21 @@
 <?php
 
-define('MAX_PAGES', 20);
-
 $url = 'http://www.tronixweb.com/';
+
+$maxPage = 20;
+if(isset($argv[1])) {
+	$maxPage = intval($argv[1]);
+	if ($maxPage === 0) {
+		$maxPage = 20;
+	}
+	echo "Max pages have been changed to $maxPage. \n";
+}
+
+$sleeptime = 1;
+if(isset($argv[2])) {
+	$sleeptime = intval($argv[2]);
+	echo "Sleep has been changed to $sleeptime. \n";
+}
 
 // List of URLs to be crawled
 $urlList = array(
@@ -15,11 +28,10 @@ $imageList = array();
 $breadcrumbMap = array();
 
 // Crawl HTML pages
-for($page=0; $page<count($urlList) && $page<MAX_PAGES; $page++) {
+for($page=0; $page<count($urlList) && $page<$maxPage; $page++) {
     // Throttle the scan so we don't overwhelm the remote server
-    sleep(1);
-
-    echo $urlList[$page], "\n\n";
+	
+	echo $urlList[$page], "\n\n";
 
     // Fetch the remote page if it exists
     $content = @file_get_contents($urlList[$page]);
