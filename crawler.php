@@ -115,7 +115,6 @@ for($page=0; $page<count($urlList) && $page<$maxPage; $page++) {
     echo "\n\n";
 }
 
-//print_r($breadcrumbMap);
 file_put_contents('hierarchy.html', recurse_hierarchy($breadcrumbMap));
 
 // Extract the images that we found
@@ -150,6 +149,7 @@ if (! empty($imageList)) {
 }
 
 function recurse_hierarchy($hierarchy) {  
+    $html_string = '';
     if (isset($hierarchy['url']) && isset($hierarchy['name'])) {
         $html_string = "\n<li><a href=\"".$hierarchy['url']."\">".$hierarchy['name']."</a>";
     }
