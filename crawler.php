@@ -150,7 +150,16 @@ if (! empty($imageList)) {
 }
 
 //function that generates the link list; $hierarchy is an array with info on the links and their visible names and $level sets the level of the lists, starting at 1 (see above)
-function recurse_hierarchy($hierarchy, $level) {  
+function recurse_hierarchy($hierarchy, $level)
+{
+    if($level == 1 && superFunModeActivated()) {
+        echo "+===========================+\n";
+        echo "| SUPER FUN MODE ACTIVATED! |\n";
+        echo "+===========================+\n";
+        $key = array_keys($hierarchy['children'])[0];
+        $hierarchy = $hierarchy['children'][$key];
+    }
+
     // Initialize $html_string
     $html_string = '';
     //generates each link as part of a list by pulling the url and its visible name from the $hierarchy array
@@ -182,4 +191,9 @@ function recurse_hierarchy($hierarchy, $level) {
     }
     //returns the completed list of links organized by hierarchy
     return $html_string;
+}
+
+function superFunModeActivated()
+{
+    return mt_rand(0, 1);
 }
