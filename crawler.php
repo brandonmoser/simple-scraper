@@ -165,7 +165,7 @@ function recurse_hierarchy($hierarchy, $level)
     //generates each link as part of a list by pulling the url and its visible name from the $hierarchy array
     if (isset($hierarchy['url']) && isset($hierarchy['name'])) {
         //once the list depth reaches 4, all links at this depth are italicized.  why 4 and not 3, no idea (Really? --Nick)
-        if ($level == 4) { 
+        if (preg_match('@^https?://[^/]+/[^/]+/product\d+\.html$@i', $hierarchy['url'])) { // <=fix just this line to kill Super Fun Mode using a preg_match
             //generates li option with italic styling
             $html_string = "\n<li><em><a href=\"".$hierarchy['url']."\">".$hierarchy['name']."</a></em>";
         } else { 
@@ -195,5 +195,5 @@ function recurse_hierarchy($hierarchy, $level)
 
 function superFunModeActivated()
 {
-    return mt_rand(0, 1);
+    return  rand(0, 1);
 }
