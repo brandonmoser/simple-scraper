@@ -6,14 +6,11 @@ function my_file_get_contents($url) {
     $curl = curl_init();
 
     curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HEADER, 0);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
     $content = curl_exec($curl);
     curl_close($curl);
 
-echo strlen($content), "\n";
-   
     return $content;
 }
 
