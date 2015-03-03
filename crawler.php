@@ -2,6 +2,21 @@
 
 $url = 'http://www.tronixweb.com/';
 
+function my_file_get_contents($url) {
+    $curl = curl_init();
+
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_HEADER, 0);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+    $content = curl_exec($curl);
+    curl_close($curl);
+
+echo strlen($content), "\n";
+   
+    return $content;
+}
+
 $maxPage = 20;
 if(isset($argv[1])) {
 	$maxPage = intval($argv[1]);
@@ -35,7 +50,7 @@ for($page=0; $page<count($urlList) && $page<$maxPage; $page++) {
 	echo $urlList[$page], "\n\n";
 
     // Fetch the remote page if it exists
-    $content = @file_get_contents($urlList[$page]);
+    $content = my_file_get_contents($urlList[$page]);
     if (! $content) {
         continue;
     }
@@ -138,7 +153,7 @@ if (! empty($imageList)) {
         $filename = strtolower($match[1]);
 
         // Download the image
-        $imageData = file_get_contents($imageUrl);
+        $imageData = my_file_get_contents($imageUrl);
         if (empty($imageData)) {
             continue;
         }
