@@ -35,9 +35,6 @@
     
     // List of product images that we found on this site
     $imageList = array();
-    
-    //starts line 137
-    call_user_func(get_images($imageList));
 
     $breadcrumbMap = array();
     
@@ -130,26 +127,29 @@
     echo "\n\n";
 }
 
+if (get_images($imageList)) {
+    echo "Images were successfully downloaded\n";
+} else {
+    echo "Unable to download images successfully\n";
+}
+
 //added 1 for the $level var in recurse_hierarchy()
 file_put_contents('hierarchy.html', recurse_hierarchy($breadcrumbMap, 1));
 
 
 // Extract the images that we found
-function get_images($imageList) { 
-    
+function get_images($imageList) {
     if (! file_exists('images')) {
-            if (! mkdir('images', 0777)) {
-                return false;
-            }
+        if (! mkdir('images', 0777)) {
+            return false;
         }
-    
+    }
+
     if (! empty($imageList)) {
         echo "Found ", count($imageList), " product images, extracting...\n";
         
-        
-        
         foreach($imageList as $imageUrl) {
-        // Check the image URL for a predictable filename
+            // Check the image URL for a predictable filename
             if (! preg_match('@/([^/]+?\.(gif|png|jpe?g))([#?]|$)@i', $imageUrl, $match) == 1) {
                 continue;
             }
@@ -168,12 +168,8 @@ function get_images($imageList) {
 
     }
 
-        return true;
-
+    return true;
 }
-
-
-
 
 
 //function that generates the link list; $hierarchy is an array with info on the links and their visible names and $level sets the level of the lists, starting at 1 (see above)
