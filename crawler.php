@@ -34,6 +34,16 @@ $urlList = array(
     $url
 );
 
+// hashmap of cached page expiration times
+$cacheTimes = array();
+// create cache folder
+if (! file_exists('cache')) {
+    if (! mkdir('cache', 0777)) {
+        echo "Wasn't able to create the directory 'cache'! No quick loading for you :(\n";
+        die;
+    }
+}
+
 // List of product images that we found on this site
 $imageList = array();
 
