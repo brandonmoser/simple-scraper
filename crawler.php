@@ -240,12 +240,12 @@ function check_cache(&$cacheTimes, $url)
             if (stripos($line, 'Cache-Control') === 0) {
                 echo "Cache-Control detected\n";
                 preg_match('@max-age=(\d+),@', $line, $match);
-                $maxAge = $match; 
+                $maxAge = $match[1]; 
                 $cacheTime = time() + (int) $maxAge; // current time + number of seconds in max-age
             } elseif (stripos($line, 'Expires') === 0) {
                 echo "Expires detected\n";
                 preg_match('@Expires:(.+)$@', $line, $match);
-                $expireTime = $match;
+                $expireTime = $match[1];
                 $cacheTime = strtotime($expireTime);
             } else {
                 $cacheTime = time() + (60 * 60 * 24); // Cache one day (60 seconds * 60 minutes * 24 hours)
