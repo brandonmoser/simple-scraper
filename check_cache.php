@@ -44,12 +44,15 @@ function check_cache(&$cacheTimes, $url)
 
         // Step through each line of the header to determine the cache time
         foreach ($lines as $line) {
-            if (strpos($line, 'Expires') === 0) {
-                echo "Expires detected\n";
-                $cacheTime = time() + (60 * 60 * 24); // Would use the Expires value here instead
-            } elseif (strpos($line, 'Cache-Control') === 0) {
+            if (strpos($line, 'Cache-Control') === 0) {
                 echo "Cache-Control detected\n";
-                $cacheTime = time() + (60 * 60 * 24); // Would use the Cache-Control: max-age value here instead
+                // same question as below case, but if preg_match fails here will the end result be the same as max-age=0 ?
+                $maxAge = preg_match('@max-age=([0-9]+)\,@', $line); 
+                $cacheTime = time() + (int) $maxAge; // current time + number of seconds in max-age
+            } elseif (strpos($line, 'Expires') === 0) {
+                echo "Expires detected\n";
+                $expireTime = preg_match('@Expires:([\s\S]+)$@', $line); // do I need a case for if the preg_match fails?
+                $cacheTime = strtotime($expireTime);
             } else {
                 $cacheTime = time() + (60 * 60 * 24); // Cache one day (60 seconds * 60 minutes * 24 hours)
             }
